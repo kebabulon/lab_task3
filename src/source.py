@@ -15,6 +15,7 @@ class Source(Protocol):
     def get_tasks(self) -> list:
         """
         Метод, который возращает описание задач
+
         :return: Список описаний задач
         """
         ...

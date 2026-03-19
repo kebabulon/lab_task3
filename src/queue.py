@@ -15,26 +15,34 @@ class TaskQueue(Sequence):
         self.tasks: list[Task] = []
 
     def add(self, task: Task) -> None:
+        """
+        Добавляет задачу в очередь по принципу FIFO
+
+        :param task: Задача
+        """
         self.tasks.append(task)
 
     def dequeue(self) -> Task:
+        """
+        Убирает задачу из очереди по принципу FIFO
+
+        :return: Задача
+        """
         if not len(self):
             raise IndexError("Очередь пустая")
         return self.tasks.pop(0)
 
-    def extend(self, other: object) -> None:
+    def extend(self, other: Sequence) -> None:
+        """
+        Добавляет задачи из другой очереди/последовательности в начало
+
+        :param other: Очередь или последовательность
+        """
         if isinstance(other, TaskQueue):
             self.tasks.extend(other)
-        elif isinstance(other, Sequence):
+        else:
             for task in other:
                 self.add(task)
-        else:
-            raise TypeError(f"Нельзя итерировать {type(other)}")
-
-    # yield реализует поддержку протокола итерации
-    def __iter__(self) -> Iterator[Task]:
-        for i in range(len(self)):
-            yield self[i]
 
     def filter(self, status: StatusEnum | None, priority: int | None) -> Iterator[Task]:
         """
@@ -49,6 +57,19 @@ class TaskQueue(Sequence):
                 or (priority is None or task.priority == priority)
             )
         return filter(filter_function, self)
+
+    def __add__(self, other: object) -> TaskQueue:
+        if not isinstance(other, Sequence):
+            raise TypeError(f"Нельзя прибавить {type(other)} к очереди")
+        sum_queue = TaskQueue()
+        sum_queue.extend(self)
+        sum_queue.extend(other)
+        return sum_queue
+
+    # yield реализует поддержку протокола итерации
+    def __iter__(self) -> Iterator[Task]:
+        for i in range(len(self)):
+            yield self[i]
 
     @overload
     def __getitem__(self, index: int) -> Task:
