@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections.abc import Iterator, Sequence
 from typing import overload
 
-from src.task import Task
+from src.task import Task, StatusEnum
 
 
 class TaskQueue(Sequence):
@@ -35,6 +35,20 @@ class TaskQueue(Sequence):
     def __iter__(self) -> Iterator[Task]:
         for i in range(len(self)):
             yield self[i]
+
+    def filter(self, status: StatusEnum | None, priority: int | None) -> Iterator[Task]:
+        """
+        Фильтр по приоритету и/или по статусу
+
+        :param task: Задача
+        :return: Итератор профильтрованых задач
+        """
+        def filter_function(task: Task) -> bool:
+            return (
+                (status is None or task.status == status)
+                or (priority is None or task.priority == priority)
+            )
+        return filter(filter_function, self)
 
     @overload
     def __getitem__(self, index: int) -> Task:
