@@ -3,7 +3,6 @@ import pytest
 from src.aggregator import Aggregator
 from src.source import GeneratorSource
 from src.task import Task, StatusEnum
-from src.constants import DEFAULT_PRIORITY
 
 
 def test_aggregator():
@@ -13,7 +12,6 @@ def test_aggregator():
     assert len(tasks) == 1
     assert tasks[0].id == 1
     assert tasks[0].status == StatusEnum.NOT_STARTED
-    assert tasks[0].priority == DEFAULT_PRIORITY
     aggregator.run()
 
 

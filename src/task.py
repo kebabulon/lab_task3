@@ -1,6 +1,8 @@
 from datetime import datetime
 from enum import Enum
-from src.constants import DEFAULT_PRIORITY
+
+from random import randint
+from src.constants import PRIORITY_RANDOM_START, PRIORITY_RANDOM_END
 
 
 class StatusEnum(Enum):
@@ -18,12 +20,14 @@ class Task():
     def __init__(self,
                  id: int,
                  payload: object,
-                 priority: int = DEFAULT_PRIORITY,
+                 priority: int | None = None,
                  ) -> None:
         if id < 0:
             raise ValueError("id не может быть отрицательным")
         self._id = id
         self._payload = payload
+        if priority is None:
+            priority = randint(PRIORITY_RANDOM_START, PRIORITY_RANDOM_END)
         if priority < 0:
             raise ValueError("Приоритет не может быть отрицательным")
         self._priority = priority
