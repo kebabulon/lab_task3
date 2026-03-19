@@ -7,6 +7,10 @@ from src.task import Task
 
 
 class TaskQueue(Sequence):
+    """
+    Класс очереди задач. Имплементирует ленивые фильтры по статусу и приоритету
+    """
+
     def __init__(self) -> None:
         self.tasks: list[Task] = []
 
