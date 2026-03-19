@@ -25,11 +25,11 @@ class TaskQueue(Sequence):
     def extend(self, other: object) -> None:
         if isinstance(other, TaskQueue):
             self.tasks.extend(other)
-        elif isinstance(other, Iterator):
+        elif isinstance(other, Sequence):
             for task in other:
                 self.add(task)
         else:
-            raise TypeError(f"Нельзя итерировать {other}")
+            raise TypeError(f"Нельзя итерировать {type(other)}")
 
     # yield реализует поддержку протокола итерации
     def __iter__(self) -> Iterator[Task]:

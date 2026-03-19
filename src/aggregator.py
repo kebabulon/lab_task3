@@ -1,6 +1,7 @@
 import logging
 
 from src.task import Task, StatusEnum
+from src.queue import TaskQueue
 from src.source import Source
 
 logger = logging.getLogger(__name__)
@@ -14,6 +15,7 @@ class Aggregator():
     def __init__(self) -> None:
         self.sources: list[Source] = []
         self.id_count = 0
+        self.task_queue = TaskQueue()
 
     def bind_source(self, source: Source) -> None:
         """
@@ -34,9 +36,9 @@ class Aggregator():
 
         :return: Список задач, выданных источниками
         """
-        tasks: list[Task] = self.aggregate_tasks()
+        self.task_queue.extend(self.aggregate_tasks())
         logger.info("Начало обработки задач")
-        for task in tasks:
+        for task in self.task_queue:
             self.handle_task(task)
         logger.info("Обработка задач окончена")
 
