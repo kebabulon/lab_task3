@@ -44,7 +44,7 @@ class TaskQueue(Sequence):
             for task in other:
                 self.add(task)
 
-    def filter(self, status: StatusEnum | None, priority: int | None) -> Iterator[Task]:
+    def filter(self, status: StatusEnum | None = None, priority: int | None = None) -> Iterator[Task]:
         """
         Фильтр по приоритету и/или по статусу
 
@@ -54,9 +54,15 @@ class TaskQueue(Sequence):
         def filter_function(task: Task) -> bool:
             return (
                 (status is None or task.status == status)
-                or (priority is None or task.priority == priority)
+                and (priority is None or task.priority == priority)
             )
         return filter(filter_function, self)
+
+    def clear(self) -> None:
+        """
+        Чистит очередь
+        """
+        self.tasks.clear()
 
     def __add__(self, other: object) -> TaskQueue:
         if not isinstance(other, Sequence):

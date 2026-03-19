@@ -4,6 +4,8 @@ from src.task import Task, StatusEnum
 from src.queue import TaskQueue
 from src.source import Source
 
+from collections.abc import Sequence
+
 logger = logging.getLogger(__name__)
 
 
@@ -15,7 +17,6 @@ class Aggregator():
     def __init__(self) -> None:
         self.sources: list[Source] = []
         self.id_count = 0
-        self.task_queue = TaskQueue()
 
     def bind_source(self, source: Source) -> None:
         """
@@ -30,26 +31,14 @@ class Aggregator():
         logger.info(f"Добавлен источник {source}")
         self.sources.append(source)
 
-    def run(self) -> None:
-        """
-        Запуск агрегатора. Агрегирует задачи и обрабатывает их
-
-        :return: Список задач, выданных источниками
-        """
-        self.task_queue.extend(self.aggregate_tasks())
-        logger.info("Начало обработки задач")
-        for task in self.task_queue:
-            self.handle_task(task)
-        logger.info("Обработка задач окончена")
-
-    def aggregate_tasks(self) -> list[Task]:
+    def aggregate_tasks(self) -> TaskQueue:
         """
         Агрегатор задач. Запрашивает задачи из всех источников
 
         :return: Список задач, выданных источниками
         """
         logger.info("Запуск получения задач из источников")
-        tasks: list[Task] = []
+        tasks = TaskQueue()
         for source in self.sources:
             for payload in source.get_tasks():
                 # создание класса Task для каждой задачи
@@ -58,23 +47,46 @@ class Aggregator():
                     id=self.id_count,
                     payload=payload,
                 )
-                tasks.append(task)
+                tasks.add(task)
         logger.info(f"Сбор задач завершен. Количество задач: {len(tasks)}")
         return tasks
 
+    def handle_tasks(self, tasks: Sequence) -> None:
+        """
+        Обрабатывает задачи. Работает с очередью и генераторами.
+
+        :param tasks: Задачи, которые нужно обработать
+        """
+        if not tasks:
+            return
+        logger.info("Начало обработки задач")
+        for task in tasks:
+            self.handle_task(task)
+        logger.info("Обработка задач окончена")
+
     def handle_task(self, task: Task) -> None:
         """
-        Обработчик задачи. Печатает payload задачи
+        Обработчик задачи. Обрабатывает статус и проверяет тип payload. Запускает .run_task()
 
-        :param task: Задача
+        :param task: Задача, которую нужно обработать
         """
         if task.status != StatusEnum.NOT_STARTED:
             raise ValueError("Нельзя обработать задачу, которая уже начата или завершена")
 
         task.status = StatusEnum.PROCESSING
+
         # проверка payload
         if not isinstance(task.payload, str):
             task.status = StatusEnum.CANCELLED
             raise RuntimeError("payload неподходящего типа")
-        print(task)
+        self.handle_task_payload(task)
+
         task.status = StatusEnum.COMPLETED
+
+    def handle_task_payload(self, task: Task) -> None:
+        """
+        Запуск задачи. Для примера просто печатает payload
+
+        :param task: Задача
+        """
+        print(f"Выполнена задача: {task}")
