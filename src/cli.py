@@ -1,4 +1,3 @@
-import logging
 import shlex
 
 from src.task import StatusEnum
@@ -6,9 +5,6 @@ from src.queue import TaskQueue
 from src.aggregator import Aggregator
 from src.source import GeneratorSource, JsonSource, ApiSource
 from src.constants import DEBUG
-
-
-logger = logging.getLogger(__name__)
 
 
 class Cli():
@@ -50,7 +46,7 @@ class Cli():
         """
         Запускает команду
 
-        :param raw_cmd: Команда и агрументы к ней
+        :param cmd: Команда и агрументы к ней
         """
         args = shlex.split(cmd)
 
