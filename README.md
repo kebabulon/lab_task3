@@ -20,6 +20,7 @@ pytest
 - Имеет магические методы `__add__`, `__iter__`, `__getitem__`, `__len__`, `__eq__`
 - `filter` возращает генератор. Можно фильтровать задачи по `priority` и `status`
 - Интерактивый интерфейс реализован в классе `Cli`. `Cli` использует `Aggregator` чтобы получать и запускать задачи, и `TaskQueue` чтобы их хранить и фильтровать.
+- Доступные команды: `help`, `aggregate`, `print`, `filter`, `run`, `clear`
 - Задача `Task`. Класс с чистым публичным API, использующий декоратор `@property`
 - Пример data descriptor: `priority` и `status`
 - Пример non-data descriptor: `time_created`
