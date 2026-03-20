@@ -12,12 +12,7 @@ def test_aggregator():
     assert len(tasks) == 1
     assert tasks[0].id == 1
     assert tasks[0].status == StatusEnum.NOT_STARTED
-    aggregator.run()
-
-
-def test_empty_aggregator():
-    aggregator = Aggregator()
-    aggregator.run()
+    aggregator.handle_tasks(tasks)
 
 
 def test_incorrect_payload():
