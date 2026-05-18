@@ -87,7 +87,6 @@ class TaskQueue(Sequence):
         sum_queue.extend(other)
         return sum_queue
 
-    # yield реализует поддержку протокола итерации
     def __iter__(self) -> Iterator[Task]:
         return TaskQueueIterator(self)
 
