@@ -6,6 +6,21 @@ from typing import overload
 from src.task import Task, StatusEnum
 
 
+class TaskQueueIterator(Iterator):
+    def __init__(self, queue):
+        self.queue: TaskQueue = queue
+        self.current = 0
+
+    def __iter__(self) -> Iterator[Task]:
+        return self
+
+    def __next__(self) -> Task:
+        self.current += 1
+        if self.current <= len(self.queue):
+            return self.queue[self.current - 1]
+        raise StopIteration
+
+
 class TaskQueue(Sequence):
     """
     Класс очереди задач. Имплементирует ленивые фильтры по статусу и приоритету
@@ -74,8 +89,7 @@ class TaskQueue(Sequence):
 
     # yield реализует поддержку протокола итерации
     def __iter__(self) -> Iterator[Task]:
-        for i in range(len(self)):
-            yield self[i]
+        return TaskQueueIterator(self)
 
     @overload
     def __getitem__(self, index: int) -> Task:
