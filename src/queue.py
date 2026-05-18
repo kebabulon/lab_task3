@@ -7,7 +7,7 @@ from src.task import Task, StatusEnum
 
 
 class TaskQueueIterator(Iterator):
-    def __init__(self, queue):
+    def __init__(self, queue) -> None:
         self.queue: TaskQueue = queue
         self.current = 0
 
